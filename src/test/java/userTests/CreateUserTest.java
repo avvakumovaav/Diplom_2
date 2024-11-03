@@ -52,7 +52,7 @@ public class CreateUserTest {
     public void createUserWithoutEmailTest() {
         User noEmailUser = new User(null, user.getPassword(), user.getName());
         ValidatableResponse response = userClient.createUser(noEmailUser);
-        userChecks.checkCreateWithNullEmailOrPasswordFailed(response);
+        userChecks.checkCreateWithNullEmailOrPasswordOrNameFailed(response);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class CreateUserTest {
     public void createUserWithoutPasswordTest() {
         User noPasswordUser = new User(user.getEmail(), null, user.getName());
         ValidatableResponse response = userClient.createUser(noPasswordUser);
-        userChecks.checkCreateWithNullEmailOrPasswordFailed(response);
+        userChecks.checkCreateWithNullEmailOrPasswordOrNameFailed(response);
     }
 
     @Test
@@ -68,7 +68,6 @@ public class CreateUserTest {
     public void createUserWithoutNameTest() {
         User noNameUser = new User(null, user.getPassword(), null);
         ValidatableResponse response = userClient.createUser(noNameUser);
-        userChecks.checkCreateWithNullEmailOrPasswordFailed(response);
+        userChecks.checkCreateWithNullEmailOrPasswordOrNameFailed(response);
     }
-
 }

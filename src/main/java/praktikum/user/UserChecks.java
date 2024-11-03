@@ -41,8 +41,8 @@ public class UserChecks {
         assertEquals( "User already exists", body.get("message"));
     }
 
-    @Step("Проверка неуспешного создания пользователя при отсутствии email или пароля в запросе")
-    public void checkCreateWithNullEmailOrPasswordFailed(ValidatableResponse response) {
+    @Step("Проверка неуспешного создания пользователя при отсутствии email, пароля или имени в запросе")
+    public void checkCreateWithNullEmailOrPasswordOrNameFailed(ValidatableResponse response) {
         var body = response.assertThat()
                 .statusCode(HTTP_FORBIDDEN)
                 .extract()
@@ -53,83 +53,26 @@ public class UserChecks {
     }
 
 
-    @Step("Проверка неуспешного добавления пользователя без логина или пароля")
-    public void checkCreateWithoutRequiredFieldsFailed(ValidatableResponse response) {
-        var body = response
-                .assertThat()
-                .statusCode(HTTP_BAD_REQUEST)
-                .extract()
-                .body().as(Map.class);
-
-        assertEquals("Недостаточно данных для создания учетной записи", body.get("message"));
-        assertEquals(Set.of("code", "message"), body.keySet());
-    }
-
     @Step("Проверка логина пользователя")
-    public int checkLoggedIn(ValidatableResponse loginResponse) {
-        int id = loginResponse
-                .assertThat()
+    public void checkLoggedIn(ValidatableResponse loginResponse, User user) {
+        loginResponse.assertThat()
                 .statusCode(HTTP_OK)
-                .extract()
-                .path("id");
-
-        assertNotEquals(0, id);
-
-        return id;
+                .and()
+                .body("success", equalTo(true))
+                .body("accessToken", notNullValue())
+                .body("refreshToken", notNullValue())
+                .body("user.email", equalTo(user.getEmail()))
+                .body("user.name", equalTo(user.getName()));
     }
 
     @Step("Проверка неуспешного логина пользователя с несуществующей парой логин-пароль")
     public void checkLoginWithNotExistedUserFailed(ValidatableResponse response) {
-        var body = response
-                .assertThat()
-                .statusCode(HTTP_NOT_FOUND)
-                .extract()
-                .body().as(Map.class);
-
-        assertEquals("Учетная запись не найдена", body.get("message"));
-        assertEquals(Set.of("code","message"), body.keySet());
+        response.assertThat()
+                .statusCode(HTTP_UNAUTHORIZED)
+                .and()
+                .body("success", equalTo(false))
+                .body("message", equalTo("email or password are incorrect"));
     }
 
 
 }
-//public class UserChecks {
-//    @Step("создался успешно")
-//    public void checkCreated(ValidatableResponse response) {
-//        boolean created = response
-//                .assertThat()
-//                .statusCode(HTTP_CREATED)
-//                .extract()
-//                .path("ok");
-//        assertTrue(created);
-//    }
-//
-//    @Step("создать не получилось")
-//    public void checkFailed(ValidatableResponse response) {
-//        var body = response
-//                .assertThat()
-//                .statusCode(HTTP_BAD_REQUEST)
-//                .extract()
-//                .body().as(Map.class);
-//
-//        assertEquals("Недостаточно данных для создания учетной записи", body.get("message"));
-//        assertEquals(Set.of("message"), body.keySet());
-//    }
-//
-//    @Step("залогинился")
-//    public int checkLoggedIn(ValidatableResponse loginResponse) {
-//        int id = loginResponse
-//                .assertThat()
-//                .statusCode(HTTP_OK)
-//                .extract()
-//                .path("id");
-//
-//        assertNotEquals(0, id);
-//
-//        return id;
-//    }
-//
-//    public void deleted(ValidatableResponse response) {
-//
-//    }
-//}
-

@@ -17,7 +17,7 @@ import java.util.List;
 
 public class CreateOrderTest {
     String accessToken;
-    private User user;
+    User user;
     UserClient userClient = new UserClient();
     OrderClient orderClient = new OrderClient();
     IngredientsClient ingredientsClient = new IngredientsClient();

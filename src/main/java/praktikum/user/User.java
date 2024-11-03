@@ -19,9 +19,4 @@ public class User {
         return new User(faker.internet().emailAddress(),
                 faker.internet().password(), faker.name().firstName());
     }
-
-    public static User createUserWithoutPassword() {
-        return new User(faker.internet().emailAddress(),
-                null, faker.name().firstName());
-    }
 }
